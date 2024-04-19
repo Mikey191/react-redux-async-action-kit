@@ -1,70 +1,151 @@
-# Getting Started with Create React App
+# Проект redux-async-action-kit.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Минимальная конфигурация для запуска пустого приложения.
 
-## Available Scripts
+1. Установка node.js + npm.
+2. Установка React через терминал: npx create-react-app "project_name"
+3. Команда для запуска в терминале: npm start
+4. В файле index.html очищаем все, кроме базовой структуры и <div id="root"></div>
+5. В папке src удаляем все файлы кроме index.js и App.js
 
-In the project directory, you can run:
+Корректируем файлы:
 
-### `npm start`
+### Файл index.js:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <App />
+);
+```
 
-### `npm test`
+### Файл App.js:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+import React from "react";
 
-### `npm run build`
+function App() {
+  return <div className="App">
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  </div>;
+}
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+export default App;
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Минимальная конфигурация для запуска пустого приложения готова.
 
-### `npm run eject`
+# Redux
+Redux - это библиотека управления состоянием. Она помогает управлять состоянием приложения и облегчает передачу данных между компонентами. Redux реализует паттерн Flux и предоставляет однонаправленный поток данных, что упрощает отслеживание изменений состояния и обновление пользовательского интерфейса.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Redux состоит из следующих основных компонентов:
+    Store - Хранит состояние приложения и предоставляет методы для его изменения.
+    Actions - Определяют события или действия, которые могут произойти в приложении.
+    Dispatcher - отвечает за отправку действий (actions) в хранилище (store) для обновления состояния приложения.
+    Reducers - Обрабатывают действия и изменяют состояние приложения. принимает данные от dispatcher.
+    State - Центральное хранилище данных, которые управляют состоянием приложения. Состояние в State может менять reducer.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 1.	STATE, REDUCER, ACTION + REDUX HOOKS useDispatch и useSelector.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    1.	 Устанавливаем модуль redux: npm install redux
+    2.	 Устанавливаем модуль react-redux: npm install react-redux. Этот модуль предназначен для связывания Redux с React компонентами.
+    3.	 Хук useDispatch используется для получения доступа к функции dispatch, которая позволяет отправлять действия (actions) в хранилище (store) Redux. Хук useDispatch возвращает ссылку на функцию dispatch, которую можно вызывать для отправки действий в Redux.
+    4.	 Хук useSelector в Redux используется для получения доступа к состоянию (state) из хранилища (store) Redux в компонентах React. Он позволяет выбирать определенные части состояния и подписываться на их изменения.
+    5.	 Переходим в файл index.js .
+    6.	 Создаем store: const store = createStore(reducer). Это объект, который содержит несколько методов: 
+    7.	 getState() - получить состояние;
+    8.	 dispatch(action) - подписаться на состояние;
+    9.	 subscribe(listener) - регистрирует слушателя, который будет вызываться каждый раз при обновлении состояния.
+    10.	replaceReducer(nextReducer) - заменяет текущий редьюсер (reducer) новым редьюсером.
+    11.	Первым параметром принимает reducer.
+    12.	Создаем reducer для передачи в createStore(). reducer - это функция, которая принимает два параметра: state и action. action - это jS объект у которого обязательно должно быть поле type, по которому мы будем определять как состояние будет изменяться. Так же в action можно передать любое количество данных в поле payload. action = {type: "", payload: "?"}.
+    13.	Реализуем логику reducer. Создаём конструкцию switch/case в которой будем отслеживать тип проброшенного action. И по дефолту это конструкция должна возвращать состояние switch() default: return state. Если к нам прилетел action, который мы не обрабатываем ни в каком кейсе то мы будем возвращать состояние без изменений.
+    14.	Создадим дефолтное состояние: const defaultState = { cash: 0 }. Состояние - может быть объект или массив, или какой-то примитив, которое хранит данные. Чаще всего это объект у которого есть конкретные поля.
+    15.	Присваиваем аргументу state в reducer дефолное состояние: const reducer = (state=defaultState, action). Оно будет присваиваться в тот момент, когда пользователь открыл приложение. И каждый раз, когда мы будем в dispatch прокидывать какой-нибудь action состояние будет изменятся и хранится до тех пор, пока пользователь либо не обновит страницу, либо не закроет приложение.
+    16.	Добавим два action в reducer: case: "ADD_CASH" и case: "GET_CASH". Для каждого action создается case. После того, как мы в dispatcher пробросили action он попадает в reducer и в зависимости от type который мы указали в action отрабатывает тот или иной case.
+    17.	Рассмотрим изменение состояния. Изначально состояние в redux является не изменяемым, мы каждый раз должны возвращать новый объект. Поэтому мы создаем новый объект, в него разворачиваем старое состояние и изменяем какое-то конкретное поле. В Case ADD_CAHS нужно вернуть объект в котором будем к старому состоянию добавлять новую сумму которая будет передаваться в поле payload в action: case "ADD_CASH": return {...state, cash: state.cash + action.payload}.
+    18.	Передаем reducer в функцию store.
+    19.	Свяжем React компоненты с Redux. Из модуля react-reduce мы получаем компонент Provider и в него оборачиваем наш App. Параметром этот компонент принимает store. <Provider store={store}><App /></Provider>.
+    20.	Реализуем взаимодействие компонента с App. Переходим в файл App.js .
+    21.	Что бы как-то изменить состояние нам нужен dispatch. получить его внутри компонента мы можем с помощью хука useDespatch: const dispatch = useDispatch().
+    22.	Получаем состояние. Для этого воспользуемся хуком useSelector. Параметром он принимает функцию, а эта функция параметром принимает состояние. И из этого состояния мы получаем нужную переменную: const cash = useSelector(state => state.cash).
+    23.	Создаем блок, в котором будем отображать количество денег на счету в данный момент: <div style={{fontSize: "3rem"}}>{cash}</div>.
+    24.	Создаем кнопки для Пополнения счета и для Снятия со счета.
+    25.	Кнопки будут принимать в событии onClick следующие функции: addCash() и getCash().
+    26.	Создаем эти функции. В них будем использовать dispatch, поскольку будем изменять состояние.
+    27.	Внутри функции addCash() вызываем dispatch(). Параметром она будет принимать action (объект у которого обязательно должен быть тип). Тип мы берем из switch одного из case для добавления денег "ADD_CASH". Второе свойство объекта - это сумма на которую мы хотим увеличить количество денег на счету. Пока она будет равна 5. dispatch({type: "ADD_CASH", payload: 5}).
+    28.	Аналогичные действия проделываем со второй функцией. Теперь в браузере наши кнопки работают.
+    29.	Реализуем сумму изменения cash динамически. Функции теперь должны принимать параметр cash, и этот параметр прокидываем в payload: const addCash = (cash) и const getCash = (cash).
+    30.	В onClick передадим в вызываемую функцию prompt (эта функция вызывает поле ввода в окне браузера) и обернем в Number для преобразования в числовое значение (prompt по дефолту возвращает строку). button onClick={() => addCash(Number(prompt()))}.
+  
+## 2.	COMBINE REDUCER, REDUX DEVTOOLS.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+    1. 	Разделим reducer на cashReducer и customerReduser. Второй будет для работы с пользователями.
+    2. 	Во втором reducer у нас будет работа с массивом. 
+    3. 	Делаем рефакторинг. Создаем папку store.
+    4. 	Внутри создаем файл index.js .
+    5. 	В файл store => index.js переносим реализацию store.
+    6. 	Для каждого reducer создадим свои файлы cashReducer.js и customerReducer.js. 
+    7. 	Переносим реализацию reducer в эти файлы.
+    8. 	Переходим к реализации customerReducer. Создаем дефолтное состояние - это будет объект с кличем customers и значением - массив [].
+    9. 	Поменяем код с учетом изменений. Нужно передать reducer в store, store необходимо передать в компонент Provider. В файле store => index.js экспортируем store.
+    10.	В файле index.js импортируем store.
+    11.	Экспортируем cashReducer. Импортируем его в store => index.js.
+    12.	Займемся объединением reducer'ов. У нас есть два reduce и нам надо сделать так, чтобы мы могли передать оба reducer в store. Импортируем customerReducer в store => index.js
+    13.	Из redux импортируем combineReducer. Создаем новый объект с названием rootReducer куда присваиваем combineReducers({cashReducer, customerReducer}),
+    14.	Передаем данные в объект с помощью ключ-значение: const rootReducer = CombineReducers({ cash: cashReducer,  customer: customerReducer, });
+    15.	Далее передаем корень rootReducer параметром в store.
+    16.	Поменяем код учитывая изменения в файле App.jsx
+    17.	В строке const cash = useSelector(state => state.cash);  мы получали переменную, теперь мы пишем название reducer'a и потом переменную, которую нужно получить: const cash = useSelector(state => state.cash.cash);
+    18.	Для удобства разработки необходимо будет отслеживать состояние. Это можно сделать с помощью инструментов разработчика. При создании, в store вторым параметром можно передать как middleware, так и инструменты разработчика. Для использования middleware вместе с инструментами разработчика нужно установить модуль: npm i @redux-devtools/extension
+    19.	Импортируем функцию из этой библиотеки: import { composeWithDevTools } from '@redux-devtools/extension' и передаем вторым параметром в createStore: export const store = createStore(rootReducer, composeWithDevTools());
+    20.	Для работы с redux-devtools необходимо расширение для браузера. Установим его.
+    21.	Теперь в инструментах разработчика доступна вкладка redux. В ней мы можем наблюдать за состоянием, какие поля есть у reducer. Так же можем видеть изменения которые внес тот или иной action.  
+  
+## 3.	ACTION CREATORS. РАБОТА С МАССИВАМИ. РЕФАКТОРИНГ.	
 
-## Learn More
+    1. 	Файл App.jsx .
+    2. 	Добавляем массив с помощью useSelector: const customers = useSelector((state) => state.customers.customers);
+    3. 	Далее в return создадим блок с условием: Если массив пустой будем отображать надпись, если массив не пустой будем его отрисовывать.
+    4. 	Создаем две кнопки: для создания клиента и для удаления клиента.
+    5. 	Переходим к customerReducer.js
+    6. 	Пропишем в нем логику. Мы возвращаем новый объект, в который разворачиваем старое состояние и, поскольку это операция добавления пользователя, мы присваиваем customers новый массив, в который разворачиваем уже существующий массив customers, и к нему в конец будем добавлять объект, который будем передавать через action: case "ADD_CUSTOMER": return { ...state, customers: [...state.customers, action.payload] };
+    7. 	Переходим в файл App.jsx.
+    8. 	Создадим функцию, которая при нажатии на кнопку будет добавлять пользователя. Это будет стрелочная функция, параметром принимающая name, внутри вызывающая функцию despatch с объектом в котором будут данные: type: "ADD_CUSTOMER", payload: customer.
+    9. 	Создаем переменную customer. Это будет объект с полями: name и id: Date.now().
+    10.	Вызываем эту функцию при нажатии на кнопку «Добавить» клиента.
+    11.	Далее реализуем слушатель нажатия на конкретного пользователя, и при нажатии на него мы его из списка будем удалять.
+    12.	Функцию для удаления назовем removeCustomer и параметром в нее будем передавать конкретно взятого клиента customer.
+    13.	Переходим к customerReduser и прописываем логику удаления клиента. В case REMOVE_CUSTOMERS создаем новый объект, разворачиваем в него состояние, и в данном случае мы будем фильтровать массив customers. Для этого воспользуемся функцией filter, которая всегда возвращает новый массив, в который попадают только те объекты, для который функция callback вернула true. В нашем случае проверяем если id клиента равно тому id который мы будем передавать как payload, то тогда элемент не попадет в новый массив: case "REMOVE_CUSTOMERS": return { ...state, customers: state.customers.filter(customer => customer.id !== action.payload) }.
+    14.	Возвращаемся к компоненту App.js, создаем функцию removeCustomer. Стрелочная функция, принимающая параметром customer. Внутри функции вызываем dispatch с объектом со следующими свойствами: type: "REMOVE_CUSTOMERS", payload: customer.id: const removeCustomer = (customer) => { dispatch({type: "REMOVE_CUSTOMERS", payload: customer.id}) }
+    15.	Отрефакторим код. Можно заметить, что объекты, которые мы передаем в dispatch, являются однотипными объектами. В type при написании каждого значения типа вручную можно легко ошибиться. Хорошей практикой считается выносить action в отдельные константы.
+    16.	Так же мы можем оптимизировать момент с передачей action. Создадим Action Creater'ы. Это простейшая функция, которая будет возвращать нам объект. Параметром эта функция будет принимать какие-то данные payload и возвращать объект с type: action (например, ADD_CAHS) и какими-то данными, которые мы передадим в параметры. Т.е. в данном случае нам не надо думать о создании объекта о передачи в него типа, мы просто вызываем функцию и параметром в нее передаем данные: const addCustomerAction = (payload) => ({ type: ADD_CUSTOMER, payload }); const removeCustomerAction = (payload) => ({ type: REMOVE_CUSTOMERS,  payload, });
+    17.	Сделаем рефактаринг в компоненте App.jsx . const addCustomer = (name) => { const customer = { name, id: Date.now(),};    dispatch(addCustomerAction(customer)); }; const removeCustomer = (customer) => { dispatch(removeCustomerAction(customer.id)) }
+    18.	Делаем аналогичные действиz с cash.
+  
+## 4.	ACTION CREATORS. REDUX THUNK И АСИНХРОННЫЕ ДЕЙСТВИЯ.	
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    1. 	Для работы с асинхронным кодом нам понадобится модуль redux-thunk. Установить модуль: npm i redux-thunk
+    2. 	В файле store => index.js подключаем этот модуль.
+    3. 	redux-thunk является middleware, поэтому нам понадобится функция applyMiddleware из библиотеки redux: import { createStore, combineReducers, applyMiddleware } from "redux";
+    4. 	Передаем ее параметром в composeWithDevTools и в applyMiddleware в свою очередь передаем параметром thunk, который импортируем из redux-thunk: import {thunk} from "redux-thunk" .
+    5. 	Для запросов будем использовать jsonplaceholder - фейковый API сервер. Пример запроса: fetch('https://jsonplaceholder.typicode.com/todos/1')
+    6. 	Переходим в customerReducer и создадим новый action. Создаем case на получение сразу пачки пользователей.
+    7. 	Далее возвращаем новый объект состояния в него разворачиваем старое состояние в котором будем изменять массив customers. В Массив сustomers разворачиваем тот массив который уже есть, и затем разворачиваем тот массив, который прилетит от сервера: case ADD_MANY_CUSTOMERS: return {...state, customers: [...state.customers, ...action.payload]}
+    8. 	Создаем action сreator addManyCustomersAction.
+    9. 	Создаем папку asyncActions в которой будем создавать все асинхронные запросы к внешнему API.
+    10.	Создаем файл customers.js. 
+    11.	Создаем стрелочную функцию fetchCustomers. 
+    12.	Что бы эту функцию использовать как action, т.е. прокидывать ее в dispatch, мы из этой функции должны вернуть новую функцию которая параметром принимает dispatch. 
+    13.	В эту возвращаемую функцию копируем запрос с сайта. 
+    14.	Изменим url что бы подтягивать именно users: fetch("https://jsonplaceholder.typicode.com/users/").then((response) => response.json()).then((json) => dispatch(addManyCustomersAction(json))).
+    15.	После получения данных мы вызываем тот dispatch, который прокинут через параметры и сразу в него прокинуть action сreator который вернет action (в нашем случае - это добавить много пользователей) и в него передаем json(в данном случае - это массив пользователей, который вернул сервер).
+    16.	Переходим в файл App.js .
+    17.	Создаем еще одну кнопку. И при нажатии на нее мы будем диспачить асинхронный action, который мы только что создавали: <button onClick={() => dispatch(fetchCustomers())}>
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Диаграмма redux-store-reducer-despatcher
